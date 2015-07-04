@@ -75,8 +75,15 @@ function setupInputRange() {
 	});
 }
 
+function setupOnTileSelect() {
+	$('.tile a').on("click", function() {
+		// Open the modal when tile selected
+	});
+}
+
 function init() {
 	setupInputRange();
+	setupOnTileSelect();
 }
 
 d3.json('bushfires.json', function(stories) {
@@ -93,11 +100,9 @@ function placeMarker(pic) {
 }
 
 function stories_to_pics(stories) {
-
 	var pics = [];
 	
 	for (var date in stories) {
-
 		stories[date].forEach(function(story) {
 			var img = story["Primary image"];
 			var url = story["URL"];
