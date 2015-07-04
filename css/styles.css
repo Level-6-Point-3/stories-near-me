@@ -26,3 +26,8 @@ html {
 transition: all 1s ease;
 	display:inline-block;
 }
+
+#map {
+   height: 500px;
+   width:    30%;
+  }
