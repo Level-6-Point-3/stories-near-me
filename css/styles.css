@@ -1,2 +1,33 @@
 @import url("normalize.css");
 
+html {
+	background: #333;
+	margin: 0;
+	padding: 0;
+}
+
+#app-header {
+	background: #444;
+	height: 15%;
+	padding: 40px;
+	width: 100%;
+}
+
+#image-tiles {
+	backround: #111;
+	text-align:center;
+	padding: 40px;
+}
+
+.tile {
+	width: 320px;
+	display: inline-block;
+	overflow: hidden;
+	text-align: center;
+}
+ 
+.tile img {
+	position: relative;
+	left: 50%;
+    transform: translate(-50%,0)
+}
