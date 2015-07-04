@@ -6,15 +6,32 @@ html {
 	padding: 0;
 }
 
+body {
+	font-family: 'Montserrat', sans-serif;
+}
+
 #app-header {
 	background: #444;
 	height: 15%;
-	padding: 40px;
+	padding: 40px 30px 30px 30px;
+}
+
+h2 {
+	margin: 0;
+	padding:0;
+	color: #Fff;
+	font-weight: normal;
+	text-align: center;
+}
+
+#app-header input {
 	width: 100%;
+	box-sizing: border-box;
 }
 
 #image-tiles {
 	backround: #111;
+	padding: 20px;
 	margin: 0;
 	transition: all 1s ease;
 }

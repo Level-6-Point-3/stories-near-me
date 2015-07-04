@@ -1,3 +1,84 @@
+$(document).ready(function() {
+	init();
+});
+	
+function setupInputRange() {
+	$('#timeline-range').on("change mousemove", function() {
+		// Grab value from input range
+		var value = $(this).val();
+		var month, year;
+
+	    // Determine month
+	    switch(value % 12) {
+	    	case 0:
+	    		month = "January";
+	    		break;
+	    	case 1:
+	    		month = "February";
+	    		break;
+	    	case 2:
+	    		month = "March";
+	    		break;
+	    	case 3:
+	    		month = "April";
+	    		break;
+	    	case 4:
+	    		month = "May";
+	    		break;
+	    	case 5:
+	    		month = "June";
+	    		break;
+	    	case 6:
+	    		month = "July";
+	    		break;
+	    	case 7:
+	    		month = "August";
+	    		break;
+	    	case 8:
+	    		month = "September";
+	    		break;
+	    	case 9:
+	    		month = "October";
+	    		break;
+	     	case 10:
+	     		month = "November";
+	    		break;
+	    	case 11:
+	    		month = "December";
+	    		break;
+	    }
+
+	    // Determine year
+	    switch (Math.floor(value / 12)) {
+	    	case 0:
+	    		year = 2009;
+	    		break;
+	    	case 1:
+	    		year = 2010;
+	    		break;
+	    	case 2:
+	    		year = 2011;
+	    		break;
+	    	case 3:
+	    		year = 2012;
+	    		break;
+	    	case 4:
+	    		year = 2013;
+	    		break;
+	    	case 5:
+	    		year = 2014;
+	    		break;
+	    }
+
+	    // Update the text label
+	    $('#timeline-date').html(month + ", " + year);
+	});
+}
+
+function init() {
+	setupInputRange();
+}
+
 d3.json('bushfires.json', function(stories) {
 	console.log(stories);
 	stories_to_pics(stories);
