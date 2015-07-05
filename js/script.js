@@ -193,12 +193,14 @@ d3.json('bushfires.json', function(stories) {
   stories_to_pics(stories);
 })
 
-var marker = undefined;
-function placeMarker(pic) {
-    if(marker != undefined) {
-		map.removeLayer(marker)
-  }
-	marker = L.marker([pic.lat, pic.lon]).addTo(map);
+var circles = [];
+function placeMarker(pic, size=1.0) {
+    
+	circles.push(L.circle([pic.lat, pic.lon], 500, {
+		color: pic.colour,
+		fillColor: pic.colour,
+		fillOpacity: 0.5
+	}).addTo(map));
 }
 
 var pics = [];
@@ -211,6 +213,22 @@ function stories_to_pics(stories) {
 			var lon = story["Longitude"]
 			var lat = story["Latitude"]
 			var title = story["Title"]
+			var colour = 'gray'
+			
+			var keywords = story["Keywords"]
+			
+			var colours = [
+				{keyword: "fire",       colour: "red"   },
+				{keyword: "flood",      colour: "blue"  },
+				{keyword: "history",    colour: "green" },
+				{keyword: "indigenous", colour: "orange"}
+			]
+			
+			colours.forEach(function(c) {
+				if(keywords.toLowerCase().indexOf(c.keyword) >= 0) {
+					colour = c.colour;
+				}
+			})
 			
 			if (img === "") {
 				/// got to xml and get random picture from there
@@ -218,17 +236,22 @@ function stories_to_pics(stories) {
 				// 	console.log("success:", data);
 				// })
 			} else {
-				pics.push({img: img, url: url, lon: lon, lat: lat, title: title});
+				pics.push({img: img, url: url, lon: lon, lat: lat, title: title, colour: colour});
 			}
 		})
 	}
 	populate_grid(undefined);
 
 	console.log(pics);
-  drawPentagons(pics);
+	drawPentagons(pics);
 }
 
 function populate_grid(centre_pic) {
+	circles.forEach(function(c) {
+		map.removeLayer(c);
+	})
+	circles = [];
+
 	if(centre_pic != undefined) {
 		pics.sort(function(a,b) {
 			dist_a = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
@@ -243,7 +266,7 @@ function populate_grid(centre_pic) {
 		var img = $('<img>').appendTo(div)
 		img.mouseover(
 			function(pic) {
-				return function() { placeMarker(pic); }
+				return function() { placeMarker(pic, 100.0); }
 			}(pics[row])
 		)
 		img.click(
@@ -253,9 +276,9 @@ function populate_grid(centre_pic) {
 		)
 		img.attr('src', pics[row].img).css('height', '100px').css('width', 'auto')
 		img.attr('title', pics[row].title)
+		placeMarker(pics[row]);
 	}
 }
-
 
 function onMapClick(e) {
 	populate_grid({lat: e.latlng.lat, lon: e.latlng.lng})
