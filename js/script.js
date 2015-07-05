@@ -193,10 +193,11 @@ function drawPentagons(selected_pics) {
         // .style("fill", function(d) { return color(d.length); });
 }
 
-d3.json('bushfires.json', function(stories) {
-  console.log(stories);
+d3.json('stories.json', function(stories) {
+  // console.log(stories);
   stories_to_pics(stories);
 })
+
 
 var circles = [];
 function placeMarker(pic) {
