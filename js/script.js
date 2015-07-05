@@ -93,6 +93,7 @@ function init() {
   
 
   svg = d3.select("body").append("svg")
+		.attr("id", "grid")
         .attr("width", width)
         .attr("height", height);
 
@@ -218,6 +219,7 @@ function stories_to_pics(stories) {
 			var lon = story["Longitude"]
 			var lat = story["Latitude"]
 			var title = story["Title"]
+			var desc = story["Primary image caption"]
 			var colour = 'gray'
 			
 			var keywords = story["Keywords"]
@@ -241,7 +243,14 @@ function stories_to_pics(stories) {
 				// 	console.log("success:", data);
 				// })
 			} else {
-				pics.push({img: img, url: url, lon: lon, lat: lat, title: title, colour: colour});
+				pics.push({
+					img: img,
+					url: url, 
+					lon: lon,
+					lat: lat,
+					title: title,
+					colour: colour,
+					desc: desc});
 			}
 		})
 	}
@@ -266,12 +275,17 @@ function populate_grid(centre_pic) {
       dist_b = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
       return dist_a - dist_b;
     })
+	
+	$("#info").html(
+		'<a href=""><h1>' + centre_pic.title + '</h1></a><h3>' + centre_pic.desc + '</h3>'
+	);
+  } else {
+	$("#info").html("")
   }
-
 
   var selected_pics = [];
 
-  for (var i = 0; i < 10; i++) {
+  for (var i = 0; i < 20; i++) {
     var elem = Math.floor(Math.random() * pics.length);
     selected_pics.push(pics[elem]);
   }

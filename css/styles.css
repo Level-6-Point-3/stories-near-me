@@ -83,8 +83,26 @@ input[type="range"]::-webkit-slider-thumb {
 /**
  * Map styles
  */
-
+#grid {
+	position: absolute;
+	width: 80%;
+	height: 80%;
+	left: 1em;
+}
 #map {
-   height: 500px;
-   width:    30%;
-  }
+	position: relative;
+	display: block;
+	float: left;
+	height: 50%;
+	width:  100%;
+	
+}
+#info_pane {
+    background-color: #aaa;
+	position: relative;
+	float:  right;
+	right:  1em;
+	width:  30%;
+	height: 700px;
+	padding: 1em;
+}
