@@ -97,10 +97,11 @@ function placeMarker(pic) {
 		map.removeLayer(marker)
 	}
 	marker = L.marker([pic.lat, pic.lon]).addTo(map);
+
 }
 
+var pics = [];
 function stories_to_pics(stories) {
-	var pics = [];
 	
 	for (var date in stories) {
 		stories[date].forEach(function(story) {
@@ -120,9 +121,22 @@ function stories_to_pics(stories) {
 			}
 		})
 	}
+	populate_grid(undefined);
 
+	console.log(pics);
+}
+
+function populate_grid(centre_pic) {
+	if(centre_pic != undefined) {
+		pics.sort(function(a,b) {
+			dist_a = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
+			dist_b = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
+			return dist_a - dist_b;
+		})
+	}
 	var contents = $('#image-tiles')
-	for(var row=0;row<50;row++) {
+	contents.html("")
+	for(var row=0;row<26;row++) {
 		var div = $('<div>', {'class': 'tile'}).appendTo(contents)
 		var img = $('<img>').appendTo(div)
 		img.mouseover(
@@ -130,10 +144,19 @@ function stories_to_pics(stories) {
 				return function() { placeMarker(pic); }
 			}(pics[row])
 		)
+		img.click(
+			function(pic) {
+				return function() {populate_grid(pic);}
+			}(pics[row])
+		)
 		img.attr('src', pics[row].img).css('height', '100px').css('width', 'auto')
 		img.attr('title', pics[row].title)
 	}
-
-	console.log(pics);
-
 }
+
+
+function onMapClick(e) {
+	populate_grid({lat: e.latlng.lat, lon: e.latlng.lng})
+}
+
+map.on('click', onMapClick);
