@@ -4,9 +4,9 @@ $(document).ready(function() {
 
 var svg;
 
-var width = 700;
-var height = 700;
-  
+var width = $(window).width();
+var height = $(window).height();
+
 function setupInputRange() {
   $('#timeline-range').on("change mousemove", function() {
     // Grab value from input range
@@ -122,8 +122,8 @@ function get_coordinates(width, height, number) {
   var points = [];
   var count_x = Math.sqrt(number);
 
-  var x0 = 75;
-  var y0 = 75;
+  var x0 = 0;
+  var y0 = 0;
 
   var row = 0;
 
@@ -160,13 +160,6 @@ function drawPentagons(pics) {
 
   console.log("points:", points);
 
-  // var points =[[200, 150], [350, 150], [275, 300]];
-
-  // var hexbin = d3.hexbin()
-  //     .size([width, height])
-  //     .radius(20);
-
-    
 
     var hexagon = svg.append("g")
         .attr("class", "hexagons")
@@ -182,11 +175,14 @@ function drawPentagons(pics) {
         .attr("transform", function(d) { return "translate(" + d[0] + "," + d[1] + ")"; })
         .attr("class", "hexagon");
 
-      var images = hexagon.append("image")
+      var images = svg.selectAll("image").data(points).enter().append("image")
       .attr("clip-path",  function(d, i) { return "url(#hexagon_" + i + ")"})
       .attr("xlink:href",  function(d, i) { return (pics[i] !== undefined) ? pics[i].img : "";})
-      .attr("height", "80%")
-      .attr("width", "80%")
+      .attr("height", "40%")
+      .attr("width", "40%")
+      .attr("style", "position: absolute")
+      .attr("x", function(d) { return d[0]; })
+      .attr("y", function(d) { return d[1]; })
       .attr("preserveAspectRatio", "xMidYMin slice")
       // .on("click", function(d, i){console.log( pics[i] ) })
       .on("click", function(d, i){ populate_grid(pics[i]) })
@@ -285,7 +281,7 @@ function populate_grid(centre_pic) {
 
   var selected_pics = [];
 
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 30; i++) {
     var elem = Math.floor(Math.random() * pics.length);
     selected_pics.push(pics[elem]);
   }
