@@ -193,7 +193,7 @@ function drawPentagons(selected_pics) {
         // .style("fill", function(d) { return color(d.length); });
 }
 
-d3.json('stories.json', function(stories) {
+d3.json('../stories.json', function(stories) {
   // console.log(stories);
   stories_to_pics(stories);
 })
