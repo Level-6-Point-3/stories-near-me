@@ -202,7 +202,7 @@ d3.json('stories.json', function(stories) {
 var circles = [];
 function placeMarker(pic) {
     
-	circles.push(L.circle([pic.lat, pic.lon], 500, {
+	circles.push(L.circle([pic.lat, pic.lon], 50000, {
 		color: pic.colour,
 		fillColor: pic.colour,
 		fillOpacity: 0.5
@@ -220,7 +220,7 @@ function stories_to_pics(stories) {
 			var lat = story["Latitude"]
 			var title = story["Title"]
 			var desc = story["Primary image caption"]
-			var colour = 'gray'
+			var colour = 'white'
 			
 			var keywords = story["Keywords"]
 			
@@ -271,44 +271,45 @@ function populate_grid(centre_pic) {
     console.log("SORTING:, ", centre_pic)
 
     pics.sort(function(a,b) {
-      dist_a = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
-      dist_b = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
-      return dist_a - dist_b;
+      dist_a  = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
+      dist_b  = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
+	  
+	  scale = dist_a > dist_b ? dist_a : dist_b;
+	  scale *= 0.5;
+	  
+	  dist_a += Math.random() * scale;
+      dist_b += Math.random() * scale;
+	  return dist_a - dist_b;
     })
-	centre_pic = pics[0];
 	
-	if("title" in centre_pic) {
-		$("#info").html(
-			'<div id="fadebox"><a href=""><h1>' + centre_pic.title + '</h1></a><h3>' + centre_pic.desc + '</h3></div>'
-		).css("background-image", 'url('+centre_pic.img+')'
-		).css("background-size", "100%");
-		
-	} else {
-		$("#info").html("")
+	
+	if(!("title" in centre_pic)) {
+	  centre_pic = pics[0];
 	}
-  } else {
+	
 	$("#info").html("")
+	
+	$("#info").html(
+		'<div id="fadebox"><a href=""><h1>' + centre_pic.title + '</h1></a><h3>' + centre_pic.desc + '</h3></div>'
+	).css("background-image", 'url('+centre_pic.img+')'
+	).css("background-size", "100%");
   }
 
   var selected_pics = [];
-
   for (var i = 0; i < 30; i++) {
-    var elem = Math.floor(Math.random() * 40);
-    selected_pics.push(pics[elem]);
+    selected_pics.push(pics[i]);
   }
 
   console.log(selected_pics);
 
-		var contents = $('#image-tiles')
-	contents.html("")
+  var contents = $('#image-tiles')
+  contents.html("")
 
-  // console.log("picx:", pics);
-
+  // console.log("picx:", pics)
   drawPentagons(selected_pics);
-	for(var row=0;row< selected_pics.length; row++) {
-
-		placeMarker(selected_pics[row]);
-	}
+  for(var row=0;row< selected_pics.length; row++) {
+    placeMarker(selected_pics[row]);
+  }
 
 }
 
