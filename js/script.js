@@ -151,6 +151,7 @@ function get_coordinates(width, height, number) {
 function drawPentagons(selected_pics) {
 
   console.log("drawing pentanons");
+  svg.html("");
   
   d3.hexbin();
 
@@ -252,7 +253,7 @@ function stories_to_pics(stories) {
 			}
 		})
 	}
-	populate_grid(undefined);
+	populate_grid({lon: -29, lat: 132});
 
 	// console.log(pics);
 }
@@ -277,8 +278,10 @@ function populate_grid(centre_pic) {
 	
 	if("title" in centre_pic) {
 		$("#info").html(
-			'<a href=""><h1>' + centre_pic.title + '</h1></a><h3>' + centre_pic.desc + '</h3>'
-		);
+			'<div id="fadebox"><a href=""><h1>' + centre_pic.title + '</h1></a><h3>' + centre_pic.desc + '</h3></div>'
+		).css("background-image", 'url('+centre_pic.img+')'
+		).css("background-size", "100%");
+		
 	} else {
 		$("#info").html("")
 	}
@@ -288,8 +291,8 @@ function populate_grid(centre_pic) {
 
   var selected_pics = [];
 
-  for (var i = 0; i < 40; i++) {
-    var elem = Math.floor(Math.random() * pics.length);
+  for (var i = 0; i < 30; i++) {
+    var elem = Math.floor(Math.random() * 40);
     selected_pics.push(pics[elem]);
   }
 

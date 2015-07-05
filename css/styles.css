@@ -95,8 +95,11 @@ input[type="range"]::-webkit-slider-thumb {
 	bottom: 1em;
 	position: absolute;
 }
-#info {
-	height: 200px;
+#fadebox {
+	height: 275px;
+	padding: 0.5em;
+    background-color: rgba(255, 255, 255, 0.6);// #ffffff;
+    border: 1px solid black;
 }
 #info_pane {
     background-color: #aaa;
