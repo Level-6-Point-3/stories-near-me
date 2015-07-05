@@ -4,7 +4,8 @@ $(document).ready(function() {
 
 var svg;
 
-var width = $(window).width();
+// var width = $(window).width();
+var width = 30;
 var height = $(window).height();
 
 function setupInputRange() {
@@ -147,7 +148,7 @@ function get_coordinates(width, height, number) {
 
 }
 
-function drawPentagons(pics) {
+function drawPentagons(selected_pics) {
 
   console.log("drawing pentanons");
   
@@ -155,7 +156,7 @@ function drawPentagons(pics) {
 
   
 
-  var points = get_coordinates(width, height, pics.length);
+  var points = get_coordinates(width, height, selected_pics.length);
 
 
   console.log("points:", points);
@@ -173,19 +174,20 @@ function drawPentagons(pics) {
         .append("polygon")
         .attr("points", hexagon_str(0.6))
         .attr("transform", function(d) { return "translate(" + d[0] + "," + d[1] + ")"; })
-        .attr("class", "hexagon");
+        .attr("class", "hexagon")
+        
 
       var images = svg.selectAll("image").data(points).enter().append("image")
       .attr("clip-path",  function(d, i) { return "url(#hexagon_" + i + ")"})
-      .attr("xlink:href",  function(d, i) { return (pics[i] !== undefined) ? pics[i].img : "";})
+      .attr("xlink:href",  function(d, i) { return (selected_pics[i] !== undefined) ? selected_pics[i].img : "";})
       .attr("height", "40%")
       .attr("width", "40%")
       .attr("style", "position: absolute")
-      .attr("x", function(d) { return d[0]; })
+      .attr("x", function(d, i) { return d[0] - 200; })
       .attr("y", function(d) { return d[1]; })
       .attr("preserveAspectRatio", "xMidYMin slice")
-      // .on("click", function(d, i){console.log( pics[i] ) })
-      .on("click", function(d, i){ populate_grid(pics[i]) })
+      .on("click", function(d, i){ populate_grid(selected_pics[i]) })
+      
       // height="100%" width="100%" xlink:href="https://sphotos-b.xx.fbcdn.net/hphotos-frc1/902130_10151601296353689_541866262_o.jpg"  />
         // .style("fill", function(d) { return color(d.length); });
 }
@@ -264,6 +266,8 @@ function populate_grid(centre_pic) {
 
   /// get only 10
   if(centre_pic != undefined) {
+    console.log("SORTING:, ", centre_pic)
+
     pics.sort(function(a,b) {
       dist_a = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
       dist_b = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
@@ -284,7 +288,7 @@ function populate_grid(centre_pic) {
 
   var selected_pics = [];
 
-  for (var i = 0; i < 30; i++) {
+  for (var i = 0; i < 40; i++) {
     var elem = Math.floor(Math.random() * pics.length);
     selected_pics.push(pics[elem]);
   }
