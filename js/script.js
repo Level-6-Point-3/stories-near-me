@@ -1,6 +1,11 @@
 $(document).ready(function() {
   init();
 });
+
+var svg;
+
+var width = 700;
+var height = 700;
   
 function setupInputRange() {
   $('#timeline-range').on("change mousemove", function() {
@@ -85,6 +90,12 @@ function init() {
   setupInputRange();
   setupOnTileSelect();
 
+  
+
+  svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
 }
 
 // returns string 
@@ -131,36 +142,30 @@ function get_coordinates(width, height, number) {
     
   }
 
-  console.log("Points: ", points);
-
   return points;
 
 }
 
 function drawPentagons(pics) {
 
-  var svg = document.getElementById("svg-elem");
-
   console.log("drawing pentanons");
   
   d3.hexbin();
 
-  width = 700;
-  height = 700;
+  
 
-  var points = get_coordinates(width, height, 5);
+  var points = get_coordinates(width, height, pics.length);
+
+
+  console.log("points:", points);
 
   // var points =[[200, 150], [350, 150], [275, 300]];
 
+  // var hexbin = d3.hexbin()
+  //     .size([width, height])
+  //     .radius(20);
 
-
-  var hexbin = d3.hexbin()
-      .size([width, height])
-      .radius(20);
-
-    var svg = d3.select("body").append("svg")
-        .attr("width", width)
-        .attr("height", height);
+    
 
     var hexagon = svg.append("g")
         .attr("class", "hexagons")
@@ -176,14 +181,14 @@ function drawPentagons(pics) {
         .attr("transform", function(d) { return "translate(" + d[0] + "," + d[1] + ")"; })
         .attr("class", "hexagon");
 
-
-
       var images = hexagon.append("image")
       .attr("clip-path",  function(d, i) { return "url(#hexagon_" + i + ")"})
-      .attr("xlink:href",  function(d, i) { return pics[i].img;})
-      .attr("height", "100%")
-      .attr("width", "100%")
+      .attr("xlink:href",  function(d, i) { return (pics[i] !== undefined) ? pics[i].img : "";})
+      .attr("height", "80%")
+      .attr("width", "80%")
       .attr("preserveAspectRatio", "xMidYMin slice")
+      // .on("click", function(d, i){console.log( pics[i] ) })
+      .on("click", function(d, i){ populate_grid(pics[i]) })
       // height="100%" width="100%" xlink:href="https://sphotos-b.xx.fbcdn.net/hphotos-frc1/902130_10151601296353689_541866262_o.jpg"  />
         // .style("fill", function(d) { return color(d.length); });
 }
@@ -194,7 +199,7 @@ d3.json('bushfires.json', function(stories) {
 })
 
 var circles = [];
-function placeMarker(pic, size=1.0) {
+function placeMarker(pic) {
     
 	circles.push(L.circle([pic.lat, pic.lon], 500, {
 		color: pic.colour,
@@ -242,42 +247,48 @@ function stories_to_pics(stories) {
 	}
 	populate_grid(undefined);
 
-	console.log(pics);
-	drawPentagons(pics);
+	// console.log(pics);
 }
 
 function populate_grid(centre_pic) {
+  console.log("circles", circles)
 	circles.forEach(function(c) {
 		map.removeLayer(c);
 	})
 	circles = [];
 
-	if(centre_pic != undefined) {
-		pics.sort(function(a,b) {
-			dist_a = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
-			dist_b = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
-			return dist_a - dist_b;
-		})
-	}
-	var contents = $('#image-tiles')
+
+  /// get only 10
+
+  if(centre_pic != undefined) {
+    pics.sort(function(a,b) {
+      dist_a = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
+      dist_b = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
+      return dist_a - dist_b;
+    })
+  }
+
+
+  var selected_pics = [];
+
+  for (var i = 0; i < 10; i++) {
+    var elem = Math.floor(Math.random() * pics.length);
+    selected_pics.push(pics[elem]);
+  }
+
+  console.log(selected_pics);
+
+		var contents = $('#image-tiles')
 	contents.html("")
-	for(var row=0;row<26;row++) {
-		var div = $('<div>', {'class': 'tile'}).appendTo(contents)
-		var img = $('<img>').appendTo(div)
-		img.mouseover(
-			function(pic) {
-				return function() { placeMarker(pic, 100.0); }
-			}(pics[row])
-		)
-		img.click(
-			function(pic) {
-				return function() {populate_grid(pic);}
-			}(pics[row])
-		)
-		img.attr('src', pics[row].img).css('height', '100px').css('width', 'auto')
-		img.attr('title', pics[row].title)
-		placeMarker(pics[row]);
+
+  // console.log("picx:", pics);
+
+  drawPentagons(selected_pics);
+	for(var row=0;row< selected_pics.length; row++) {
+
+		placeMarker(selected_pics[row]);
 	}
+
 }
 
 function onMapClick(e) {
