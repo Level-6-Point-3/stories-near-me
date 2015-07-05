@@ -43,7 +43,7 @@ h2 {
 
 #image-tiles {
 	backround: #111;
-	padding: 20px;
+	padding: 0.5em;
 	margin: 0;
 	transition: all 1s ease;
 }
@@ -90,12 +90,13 @@ input[type="range"]::-webkit-slider-thumb {
 	left: 1em;
 }
 #map {
-	position: relative;
-	display: block;
-	float: left;
-	height: 50%;
-	width:  100%;
-	
+	height: 60%;
+	width: 95%;
+	bottom: 1em;
+	position: absolute;
+}
+#info {
+	height: 200px;
 }
 #info_pane {
     background-color: #aaa;
@@ -103,6 +104,15 @@ input[type="range"]::-webkit-slider-thumb {
 	float:  right;
 	right:  1em;
 	width:  30%;
-	height: 700px;
+	height: 800px;
 	padding: 1em;
+	
+	border: 2px solid;
+	border-color: #444;
+    border-radius: 5px;
+}
+
+#info_pane h3 {
+	
+  font-family: Helvetica, Arial, Sans-Serif;
 }

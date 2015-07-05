@@ -262,19 +262,22 @@ function populate_grid(centre_pic) {
 	})
 	circles = [];
 
-
   /// get only 10
-
   if(centre_pic != undefined) {
     pics.sort(function(a,b) {
       dist_a = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
       dist_b = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
       return dist_a - dist_b;
     })
+	centre_pic = pics[0];
 	
-	$("#info").html(
-		'<a href=""><h1>' + centre_pic.title + '</h1></a><h3>' + centre_pic.desc + '</h3>'
-	);
+	if("title" in centre_pic) {
+		$("#info").html(
+			'<a href=""><h1>' + centre_pic.title + '</h1></a><h3>' + centre_pic.desc + '</h3>'
+		);
+	} else {
+		$("#info").html("")
+	}
   } else {
 	$("#info").html("")
   }
