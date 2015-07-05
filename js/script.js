@@ -103,6 +103,40 @@ function hexagon_str(mul) {
   return str;
 }
 
+function get_coordinates(width, height, number) {
+  var size_x = 175;
+  var size_y = 150;
+
+  var points = [];
+  var count_x = Math.sqrt(number);
+
+  var x0 = 75;
+  var y0 = 75;
+
+  var row = 0;
+
+  var x_offset = 0;
+  var y_offset = 0;
+
+  var i = 0;
+  while (i < number) {
+    for (var j = 0; j < count_x; j++) {
+      points.push([x0 + x_offset, y0 + y_offset]);
+      x_offset += size_x;
+      i++;
+    }
+    row += 1;
+    x_offset = ((row % 2) == 0) ? 0 : 85;
+    y_offset += size_y;
+    
+  }
+
+  console.log("Points: ", points);
+
+  return points;
+
+}
+
 function drawPentagons(pics) {
 
   console.log("drawing pentanons");
@@ -112,7 +146,11 @@ function drawPentagons(pics) {
   width = 700;
   height = 700;
 
-  var points =[[200, 150], [350, 150], [275, 300]];
+  var points = get_coordinates(width, height, 5);
+
+  // var points =[[200, 150], [350, 150], [275, 300]];
+
+
 
   var hexbin = d3.hexbin()
       .size([width, height])
@@ -125,7 +163,7 @@ function drawPentagons(pics) {
     var hexagon = svg.append("g")
         .attr("class", "hexagons")
       .selectAll("polygon")
-        .data(hexbin(points))
+        .data(points)
         // data(hexbin.mesh())
       .enter().append("g");
 
@@ -133,7 +171,7 @@ function drawPentagons(pics) {
         .attr("id", function (d, i) { return "hexagon_" + i;} )
         .append("polygon")
         .attr("points", hexagon_str(0.6))
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+        .attr("transform", function(d) { return "translate(" + d[0] + "," + d[1] + ")"; })
         .attr("class", "hexagon");
 
 
