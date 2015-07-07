@@ -9,7 +9,8 @@ var width = 30;
 var height = $(window).height();
 
 function setupInputRange() {
-  $('#timeline-range').on("change mousemove", function() {
+  //$('#timeline-range').on("change mousemove", function() {
+  $('#timeline-range').on("change", function() {
     // Grab value from input range
     var value = $(this).val();
     var month, year;
@@ -17,40 +18,52 @@ function setupInputRange() {
       // Determine month
       switch(value % 12) {
         case 0:
-          month = "January";
+          //month = "January";
+          month = "Jan";
           break;
         case 1:
-          month = "February";
+          //month = "February";
+          month = "Feb";
           break;
         case 2:
-          month = "March";
+          //month = "March";
+          month = "Mar";
           break;
         case 3:
-          month = "April";
+          //month = "April";
+          month = "Apr";
           break;
         case 4:
+          //month = "May";
           month = "May";
           break;
         case 5:
-          month = "June";
+          //month = "June";
+          month = "Jun";
           break;
         case 6:
-          month = "July";
+          //month = "July";
+          month = "Jul";
           break;
         case 7:
-          month = "August";
+          //month = "August";
+          month = "Aug";
           break;
         case 8:
-          month = "September";
+          //month = "September";
+          month = "Sep";
           break;
         case 9:
-          month = "October";
+          //month = "October";
+          month = "Oct";
           break;
         case 10:
-          month = "November";
+          //month = "November";
+          month = "Nov";
           break;
         case 11:
-          month = "December";
+          //month = "December";
+          month = "Dec";
           break;
       }
 
@@ -78,6 +91,11 @@ function setupInputRange() {
 
       // Update the text label
       $('#timeline-date').html(month + ", " + year);
+
+      d3.json('../stories.json', function(stories) {
+        // console.log(stories);
+        stories_to_pics(month + "-" + year);
+      })
   });
 }
 
@@ -193,9 +211,11 @@ function drawPentagons(selected_pics) {
         // .style("fill", function(d) { return color(d.length); });
 }
 
+var all_stories;
 d3.json('../stories.json', function(stories) {
   // console.log(stories);
-  stories_to_pics(stories);
+  all_stories = stories;
+  stories_to_pics("Jan-2009");
 })
 
 
@@ -210,50 +230,47 @@ function placeMarker(pic) {
 }
 
 var pics = [];
-function stories_to_pics(stories) {
-	
-	for (var date in stories) {
-		stories[date].forEach(function(story) {
-			var img = story["Primary image"];
-			var url = story["URL"];
-			var lon = story["Longitude"]
-			var lat = story["Latitude"]
-			var title = story["Title"]
-			var desc = story["Primary image caption"]
-			var colour = 'white'
-			
-			var keywords = story["Keywords"]
-			
-			var colours = [
-				{keyword: "fire",       colour: "red"   },
-				{keyword: "flood",      colour: "blue"  },
-				{keyword: "history",    colour: "green" },
-				{keyword: "indigenous", colour: "orange"}
-			]
-			
-			colours.forEach(function(c) {
-				if(keywords.toLowerCase().indexOf(c.keyword) >= 0) {
-					colour = c.colour;
-				}
-			})
-			
-			if (img === "") {
-				/// got to xml and get random picture from there
-				// d3.xml("http://www.abc.net.au/local/photos/2013/08/28/3836057-mediarss.xml", function(data) {
-				// 	console.log("success:", data);
-				// })
-			} else {
-				pics.push({
-					img: img,
-					url: url, 
-					lon: lon,
-					lat: lat,
-					title: title,
-					colour: colour,
-					desc: desc});
-			}
-		})
-	}
+function stories_to_pics(date) {
+  all_stories[date].forEach(function(story) {
+    var img = story["Primary image"];
+    var url = story["URL"];
+    var lon = story["Longitude"]
+    var lat = story["Latitude"]
+    var title = story["Title"]
+    var desc = story["Primary image caption"]
+    var colour = 'white'
+    
+    var keywords = story["Keywords"]
+    
+    var colours = [
+      {keyword: "fire",       colour: "red"   },
+      {keyword: "flood",      colour: "blue"  },
+      {keyword: "history",    colour: "green" },
+      {keyword: "indigenous", colour: "orange"}
+    ]
+    
+    colours.forEach(function(c) {
+      if(keywords.toLowerCase().indexOf(c.keyword) >= 0) {
+        colour = c.colour;
+      }
+    })
+    
+    if (img === "") {
+      /// got to xml and get random picture from there
+      // d3.xml("http://www.abc.net.au/local/photos/2013/08/28/3836057-mediarss.xml", function(data) {
+      // 	console.log("success:", data);
+      // })
+    } else {
+      pics.push({
+        img: img,
+        url: url, 
+        lon: lon,
+        lat: lat,
+        title: title,
+        colour: colour,
+        desc: desc});
+    }
+  })
 	populate_grid({lon: -29, lat: 132});
 
 	// console.log(pics);
@@ -296,7 +313,8 @@ function populate_grid(centre_pic) {
   }
 
   var selected_pics = [];
-  for (var i = 0; i < 30; i++) {
+  var len = 30>pics.length ? pics.length : 30;
+  for (var i = 0; i < len; i++) {
     selected_pics.push(pics[i]);
   }
 
