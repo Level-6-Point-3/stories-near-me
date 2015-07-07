@@ -1,3 +1,5 @@
+"strict mode";
+
 $(document).ready(function() {
   init();
 });
@@ -112,7 +114,7 @@ function init() {
   
 
   svg = d3.select("body").append("svg")
-		.attr("id", "grid")
+        .attr("id", "grid")
         .attr("width", width)
         .attr("height", height);
 
@@ -159,7 +161,7 @@ function get_coordinates(width, height, number) {
     row += 1;
     x_offset = ((row % 2) == 0) ? 0 : 85;
     y_offset += size_y;
-    
+
   }
 
   return points;
@@ -170,10 +172,10 @@ function drawPentagons(selected_pics) {
 
   console.log("drawing pentanons");
   svg.html("");
-  
+
   d3.hexbin();
 
-  
+
 
   var points = get_coordinates(width, height, selected_pics.length);
 
@@ -194,7 +196,7 @@ function drawPentagons(selected_pics) {
         .attr("points", hexagon_str(0.6))
         .attr("transform", function(d) { return "translate(" + d[0] + "," + d[1] + ")"; })
         .attr("class", "hexagon")
-        
+
 
       var images = svg.selectAll("image").data(points).enter().append("image")
       .attr("clip-path",  function(d, i) { return "url(#hexagon_" + i + ")"})
@@ -206,7 +208,7 @@ function drawPentagons(selected_pics) {
       .attr("y", function(d) { return d[1]; })
       .attr("preserveAspectRatio", "xMidYMin slice")
       .on("click", function(d, i){ populate_grid(selected_pics[i]) })
-      
+
       // height="100%" width="100%" xlink:href="https://sphotos-b.xx.fbcdn.net/hphotos-frc1/902130_10151601296353689_541866262_o.jpg"  />
         // .style("fill", function(d) { return color(d.length); });
 }
@@ -221,12 +223,12 @@ d3.json('../stories.json', function(stories) {
 
 var circles = [];
 function placeMarker(pic) {
-    
-	circles.push(L.circle([pic.lat, pic.lon], 50000, {
-		color: pic.colour,
-		fillColor: pic.colour,
-		fillOpacity: 0.5
-	}).addTo(map));
+
+  circles.push(L.circle([pic.lat, pic.lon], 50000, {
+    color: pic.colour,
+    fillColor: pic.colour,
+    fillOpacity: 0.5
+  }).addTo(map));
 }
 
 var pics = [];
@@ -239,22 +241,22 @@ function stories_to_pics(date) {
     var title = story["Title"]
     var desc = story["Primary image caption"]
     var colour = 'white'
-    
+
     var keywords = story["Keywords"]
-    
+
     var colours = [
       {keyword: "fire",       colour: "red"   },
       {keyword: "flood",      colour: "blue"  },
       {keyword: "history",    colour: "green" },
       {keyword: "indigenous", colour: "orange"}
     ]
-    
+
     colours.forEach(function(c) {
       if(keywords.toLowerCase().indexOf(c.keyword) >= 0) {
         colour = c.colour;
       }
     })
-    
+
     if (img === "") {
       /// got to xml and get random picture from there
       // d3.xml("http://www.abc.net.au/local/photos/2013/08/28/3836057-mediarss.xml", function(data) {
@@ -290,26 +292,27 @@ function populate_grid(centre_pic) {
     pics.sort(function(a,b) {
       dist_a  = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
       dist_b  = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
-	  
-	  scale = dist_a > dist_b ? dist_a : dist_b;
-	  scale *= 0.5;
-	  
-	  dist_a += Math.random() * scale;
+
+      scale = dist_a > dist_b ? dist_a : dist_b;
+      scale *= 0.5;
+
+      dist_a += Math.random() * scale;
       dist_b += Math.random() * scale;
-	  return dist_a - dist_b;
+      return dist_a - dist_b;
     })
-	
-	
-	if(!("title" in centre_pic)) {
-	  centre_pic = pics[0];
-	}
-	
-	$("#info").html("")
-	
-	$("#info").html(
-		'<div id="fadebox"><a href=""><h1>' + centre_pic.title + '</h1></a><h3>' + centre_pic.desc + '</h3></div>'
-	).css("background-image", 'url('+centre_pic.img+')'
-	).css("background-size", "100%");
+
+
+    if(!("title" in centre_pic)) {
+      centre_pic = pics[0];
+    }
+
+    $("#info").html("")
+
+      $("#info").html('<div id="fadebox"><a href=""><h1>' +
+         centre_pic.title + '</h1></a><h3>' +
+         centre_pic.desc + '</h3></div>')
+         .css("background-image", 'url('+centre_pic.img+')')
+         .css("background-size", "100%");
   }
 
   var selected_pics = [];
@@ -332,7 +335,7 @@ function populate_grid(centre_pic) {
 }
 
 function onMapClick(e) {
-	populate_grid({lat: e.latlng.lat, lon: e.latlng.lng})
+  populate_grid({lat: e.latlng.lat, lon: e.latlng.lng})
 }
 
 map.on('click', onMapClick);
