@@ -10,318 +10,61 @@ var svg;
 var width = 30;
 var height = $(window).height();
 
+function init() {
+  setupInputRange();
+
+  storyProvider.readJson(function() {
+
+    var stories = storyProvider.get_selection();
+    gridManager.drawPentagons(stories);
+
+
+  });
+
+
+  // listen("refresh", function(args) {
+  //   var pics = storyProvider.get(30, {
+  //     range: args.range,
+  //     coords: args.coords
+  //   });
+  //   gridManager.draw(pics)
+  //   map.draw(pics)
+  // });
+
+}
+
 function setupInputRange() {
+
+    // Determine month
+
   //$('#timeline-range').on("change mousemove", function() {
   $('#timeline-range').on("change", function() {
     // Grab value from input range
     var value = $(this).val();
-    var month, year;
 
-      // Determine month
-      switch(value % 12) {
-        case 0:
-          //month = "January";
-          month = "Jan";
-          break;
-        case 1:
-          //month = "February";
-          month = "Feb";
-          break;
-        case 2:
-          //month = "March";
-          month = "Mar";
-          break;
-        case 3:
-          //month = "April";
-          month = "Apr";
-          break;
-        case 4:
-          //month = "May";
-          month = "May";
-          break;
-        case 5:
-          //month = "June";
-          month = "Jun";
-          break;
-        case 6:
-          //month = "July";
-          month = "Jul";
-          break;
-        case 7:
-          //month = "August";
-          month = "Aug";
-          break;
-        case 8:
-          //month = "September";
-          month = "Sep";
-          break;
-        case 9:
-          //month = "October";
-          month = "Oct";
-          break;
-        case 10:
-          //month = "November";
-          month = "Nov";
-          break;
-        case 11:
-          //month = "December";
-          month = "Dec";
-          break;
-      }
+    var short_month = dateHelper.spell_month_short(value % 12);
+    var long_month  = dateHelper.spell_month(value % 12);
 
-      // Determine year
-      switch (Math.floor(value / 12)) {
-        case 0:
-          year = 2009;
-          break;
-        case 1:
-          year = 2010;
-          break;
-        case 2:
-          year = 2011;
-          break;
-        case 3:
-          year = 2012;
-          break;
-        case 4:
-          year = 2013;
-          break;
-        case 5:
-          year = 2014;
-          break;
-      }
+    var year = Math.floor(value / 12) + 2009;
 
-      // Update the text label
-      $('#timeline-date').html(month + ", " + year);
+    // Update the text label
+    $('#timeline-date').html(long_month + ", " + year);
 
-      d3.json('../stories.json', function(stories) {
-        // console.log(stories);
-        stories_to_pics(month + "-" + year);
-      })
-  });
-}
-
-function setupOnTileSelect() {
-  $('.tile a').on("click", function() {
-    // Open the modal when tile selected
-  });
-}
-
-function init() {
-  setupInputRange();
-  setupOnTileSelect();
-
-  
-
-  svg = d3.select("body").append("svg")
-        .attr("id", "grid")
-        .attr("width", width)
-        .attr("height", height);
-
-}
-
-// returns string 
-function hexagon_str(mul) {
-//"135,0 0,80 0,242.5 135,322.5 280,242.5 280,80"
-  var str = (135 * mul).toString()   + ", 0 0, " +
-            (80 * mul).toString()    + " 0, "    +
-            (242.5 * mul).toString() + " "       +
-            (135 * mul).toString()   + ", "      +
-            (322.5 * mul).toString() + " "       +
-            (280 * mul).toString()   + ", "      +
-            (242.5 * mul).toString() + " "       +
-            (280 * mul).toString()   + ", "      +
-            (80 * mul).toString();
-
-  return str;
-}
-
-function get_coordinates(width, height, number) {
-  var size_x = 175;
-  var size_y = 150;
-
-  var points = [];
-  var count_x = Math.sqrt(number);
-
-  var x0 = 0;
-  var y0 = 0;
-
-  var row = 0;
-
-  var x_offset = 0;
-  var y_offset = 0;
-
-  var i = 0;
-  while (i < number) {
-    for (var j = 0; j < count_x; j++) {
-      points.push([x0 + x_offset, y0 + y_offset]);
-      x_offset += size_x;
-      i++;
-    }
-    row += 1;
-    x_offset = ((row % 2) == 0) ? 0 : 85;
-    y_offset += size_y;
-
-  }
-
-  return points;
-
-}
-
-function drawPentagons(selected_pics) {
-
-  console.log("drawing pentanons");
-  svg.html("");
-
-  d3.hexbin();
-
-
-
-  var points = get_coordinates(width, height, selected_pics.length);
-
-
-  console.log("points:", points);
-
-
-    var hexagon = svg.append("g")
-        .attr("class", "hexagons")
-      .selectAll("polygon")
-        .data(points)
-        // data(hexbin.mesh())
-      .enter().append("g");
-
-      hexagon.append("clipPath")
-        .attr("id", function (d, i) { return "hexagon_" + i;} )
-        .append("polygon")
-        .attr("points", hexagon_str(0.6))
-        .attr("transform", function(d) { return "translate(" + d[0] + "," + d[1] + ")"; })
-        .attr("class", "hexagon")
-
-
-      var images = svg.selectAll("image").data(points).enter().append("image")
-      .attr("clip-path",  function(d, i) { return "url(#hexagon_" + i + ")"})
-      .attr("xlink:href",  function(d, i) { return (selected_pics[i] !== undefined) ? selected_pics[i].img : "";})
-      .attr("height", "40%")
-      .attr("width", "40%")
-      .attr("style", "position: absolute")
-      .attr("x", function(d, i) { return d[0] - 200; })
-      .attr("y", function(d) { return d[1]; })
-      .attr("preserveAspectRatio", "xMidYMin slice")
-      .on("click", function(d, i){ populate_grid(selected_pics[i]) })
-
-      // height="100%" width="100%" xlink:href="https://sphotos-b.xx.fbcdn.net/hphotos-frc1/902130_10151601296353689_541866262_o.jpg"  />
-        // .style("fill", function(d) { return color(d.length); });
-}
-
-var all_stories;
-d3.json('../stories.json', function(stories) {
-  // console.log(stories);
-  all_stories = stories;
-  stories_to_pics("Jan-2009");
-})
-
-
-var circles = [];
-function placeMarker(pic) {
-
-  circles.push(L.circle([pic.lat, pic.lon], 50000, {
-    color: pic.colour,
-    fillColor: pic.colour,
-    fillOpacity: 0.5
-  }).addTo(map));
-}
-
-var pics = [];
-function stories_to_pics(date) {
-  all_stories[date].forEach(function(story) {
-    var img = story["Primary image"];
-    var url = story["URL"];
-    var lon = story["Longitude"]
-    var lat = story["Latitude"]
-    var title = story["Title"]
-    var desc = story["Primary image caption"]
-    var colour = 'white'
-
-    var keywords = story["Keywords"]
-
-    var colours = [
-      {keyword: "fire",       colour: "red"   },
-      {keyword: "flood",      colour: "blue"  },
-      {keyword: "history",    colour: "green" },
-      {keyword: "indigenous", colour: "orange"}
-    ]
-
-    colours.forEach(function(c) {
-      if(keywords.toLowerCase().indexOf(c.keyword) >= 0) {
-        colour = c.colour;
-      }
-    })
-
-    if (img === "") {
-      /// got to xml and get random picture from there
-      // d3.xml("http://www.abc.net.au/local/photos/2013/08/28/3836057-mediarss.xml", function(data) {
-      // 	console.log("success:", data);
+      // d3.json('../stories.json', function(stories) {
+      //   console.log(short_month + "-" + year);
+      //   pics = stories_to_pics(short_month + "-" + year);
       // })
-    } else {
-      pics.push({
-        img: img,
-        url: url, 
-        lon: lon,
-        lat: lat,
-        title: title,
-        colour: colour,
-        desc: desc});
-    }
-  })
-	populate_grid({lon: -29, lat: 132});
-
-	// console.log(pics);
+  });
 }
+
+var dateHelper    = DateHelper();
+var storyProvider = StoryProvider();
+var gridManager   = GridManager();
+var infoPane      = InfoPane();
+var mapView       = MapView();
 
 function populate_grid(centre_pic) {
-  console.log("circles", circles)
-	circles.forEach(function(c) {
-		map.removeLayer(c);
-	})
-	circles = [];
 
-  /// get only 10
-  if(centre_pic != undefined) {
-    console.log("SORTING:, ", centre_pic)
-
-    pics.sort(function(a,b) {
-      dist_a  = Math.abs(centre_pic.lat - a.lat) + Math.abs(centre_pic.lon - a.lon);
-      dist_b  = Math.abs(centre_pic.lat - b.lat) + Math.abs(centre_pic.lon - b.lon);
-
-      scale = dist_a > dist_b ? dist_a : dist_b;
-      scale *= 0.5;
-
-      dist_a += Math.random() * scale;
-      dist_b += Math.random() * scale;
-      return dist_a - dist_b;
-    })
-
-
-    if(!("title" in centre_pic)) {
-      centre_pic = pics[0];
-    }
-
-    $("#info").html("")
-
-      $("#info").html('<div id="fadebox"><a href=""><h1>' +
-         centre_pic.title + '</h1></a><h3>' +
-         centre_pic.desc + '</h3></div>')
-         .css("background-image", 'url('+centre_pic.img+')')
-         .css("background-size", "100%");
-  }
-
-  var selected_pics = [];
-  var len = 30>pics.length ? pics.length : 30;
-  for (var i = 0; i < len; i++) {
-    selected_pics.push(pics[i]);
-  }
-
-  console.log(selected_pics);
 
   var contents = $('#image-tiles')
   contents.html("")
@@ -333,9 +76,3 @@ function populate_grid(centre_pic) {
   }
 
 }
-
-function onMapClick(e) {
-  populate_grid({lat: e.latlng.lat, lon: e.latlng.lng})
-}
-
-map.on('click', onMapClick);
